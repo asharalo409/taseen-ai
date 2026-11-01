@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { authFetch } from '@/lib/api';
 import { useLang } from '@/app/providers';
 
 export default function OverviewPage() {
   const { t } = useLang();
   const [stats, setStats] = useState({ messages: '…', memories: '…', tasks: '…', approvals: '…' });
+  const [tg, setTg] = useState('');
+  const [tgBusy, setTgBusy] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -21,6 +24,19 @@ export default function OverviewPage() {
     }
     load();
   }, []);
+
+  async function testTelegram() {
+    setTgBusy(true);
+    setTg('');
+    try {
+      const res = await authFetch('/api/telegram/test', { method: 'POST' });
+      const json = await res.json();
+      setTg(res.ok ? t('telegramOk') : `${t('telegramFail')} ${json.reason || json.error || ''}`);
+    } catch {
+      setTg(`${t('telegramFail')} network`);
+    }
+    setTgBusy(false);
+  }
 
   const cards = [
     ['statMessages', stats.messages],
@@ -39,6 +55,13 @@ export default function OverviewPage() {
             <div className="value glow">{value}</div>
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop: 22 }}>
+        <button className="btn small" onClick={testTelegram} disabled={tgBusy}>
+          {tgBusy ? t('sending') : t('telegramTest')}
+        </button>
+        {tg && <div className="notice" style={{ marginTop: 10 }}>{tg}</div>}
       </div>
     </div>
   );
