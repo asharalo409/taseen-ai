@@ -3,6 +3,7 @@ import { requireUser } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { generateReply } from '@/lib/ai/providers';
 import { logActivity } from '@/lib/audit';
+import { sendTelegram } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -10,8 +11,22 @@ export const maxDuration = 30;
 const SYSTEM_PROMPT = `You are Taseen AI, the personal AI assistant of your owner, Taseen.
 - Reply in the same language the user writes in (Bengali or English).
 - Be clear, helpful, honest and concise. If you are unsure, say so.
-- You currently can only chat. You cannot send emails, delete files, publish content or spend money.
-- In future, any sensitive action will require the owner's explicit approval. Never claim you performed an action you did not perform.`;
+- You can only chat. You cannot browse the web, send emails, delete files, publish content or spend money. Never claim you did something you did not do.
+- If the owner shares a lasting personal fact or preference worth remembering, you may propose saving it by adding a line at the very end of your reply exactly like: [[REMEMBER: short fact]]
+  This only creates a request that the owner must approve. Never say it has already been saved.`;
+
+// Finds [[REMEMBER: ...]] tags, removes them from the visible reply, returns up to 2 proposals.
+function extractProposals(reply) {
+  const proposals = [];
+  const cleaned = reply
+    .replace(/\[\[REMEMBER:\s*([^\]]{1,300})\]\]/g, (_m, text) => {
+      const value = text.trim();
+      if (value && proposals.length < 2) proposals.push(value);
+      return '';
+    })
+    .trim();
+  return { cleaned: cleaned || '…', proposals };
+}
 
 export async function POST(request) {
   const user = await requireUser(request);
@@ -78,9 +93,9 @@ export async function POST(request) {
     ? `${SYSTEM_PROMPT}\n\nThings you remember about the owner:\n${memories}`
     : SYSTEM_PROMPT;
 
-  let reply;
+  let rawReply;
   try {
-    reply = await generateReply({ system, messages: history });
+    rawReply = await generateReply({ system, messages: history });
   } catch (err) {
     const detail = String(err && err.message ? err.message : 'unknown error').slice(0, 300);
     console.error('AI error:', detail);
@@ -89,10 +104,31 @@ export async function POST(request) {
     return NextResponse.json({ error: `AI provider failed. ${detail}` }, { status: 502 });
   }
 
+  const { cleaned, proposals } = extractProposals(rawReply);
+
   await db
     .from('messages')
-    .insert({ conversation_id: conversationId, user_id: user.id, role: 'assistant', content: reply });
+    .insert({ conversation_id: conversationId, user_id: user.id, role: 'assistant', content: cleaned });
   await logActivity(user.id, 'chat.message', { conversationId });
 
-  return NextResponse.json({ conversationId, reply });
+  // Memory proposals become PENDING approvals. Nothing is saved until the owner approves.
+  let created = 0;
+  for (const text of proposals) {
+    const { data: approval, error } = await db
+      .from('approvals')
+      .insert({
+        user_id: user.id,
+        action_type: 'save_memory',
+        summary: `Remember: ${text}`,
+        payload: { text },
+      })
+      .select('id')
+      .single();
+    if (error || !approval) continue;
+    created += 1;
+    await logActivity(user.id, 'approval.requested', { id: approval.id, type: 'save_memory' });
+    await sendTelegram(`🔔 Taseen AI approval needed\n\nRemember: ${text}\n\nOpen the dashboard → Approvals to approve or reject.`);
+  }
+
+  return NextResponse.json({ conversationId, reply: cleaned, approvals: created });
 }
