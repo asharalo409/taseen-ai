@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { authFetch } from '@/lib/api';
 import { useLang } from '@/app/providers';
 
 export default function ChatPage() {
@@ -11,6 +12,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const endRef = useRef(null);
   const formRef = useRef(null);
 
@@ -45,22 +47,21 @@ export default function ChatPage() {
     if (!text || loading) return;
 
     setError('');
+    setNotice('');
     setInput('');
     setLoading(true);
     setMessages((m) => [...m, { id: 'u' + Date.now(), role: 'user', content: text }]);
 
     try {
-      const { data } = await supabase.auth.getSession();
-      const token = data.session ? data.session.access_token : '';
-      const res = await fetch('/api/chat', {
+      const res = await authFetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: text, conversationId }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Error');
       setConversationId(json.conversationId);
       setMessages((m) => [...m, { id: 'a' + Date.now(), role: 'assistant', content: json.reply }]);
+      if (json.approvals > 0) setNotice(t('approvalCreated'));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -79,6 +80,7 @@ export default function ChatPage() {
     setConversationId(null);
     setMessages([]);
     setError('');
+    setNotice('');
   }
 
   return (
@@ -97,6 +99,7 @@ export default function ChatPage() {
         <div ref={endRef} />
       </div>
 
+      {notice && <div className="notice">{notice}</div>}
       {error && <div className="error">{error}</div>}
 
       <form className="composer" onSubmit={send} ref={formRef}>
