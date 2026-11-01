@@ -9,11 +9,11 @@ import { useLang } from '@/app/providers';
 const ITEMS = [
   { key: 'overview', href: '/dashboard', icon: '◈' },
   { key: 'chat', href: '/dashboard/chat', icon: '❯' },
-  { key: 'activity', href: null, icon: '≡' },
+  { key: 'activity', href: '/dashboard/activity', icon: '≡' },
   { key: 'accounts', href: null, icon: '⚿' },
-  { key: 'tasks', href: null, icon: '☑' },
-  { key: 'memory', href: null, icon: '◎' },
-  { key: 'approvals', href: null, icon: '✓' },
+  { key: 'tasks', href: '/dashboard/tasks', icon: '☑' },
+  { key: 'memory', href: '/dashboard/memory', icon: '◎' },
+  { key: 'approvals', href: '/dashboard/approvals', icon: '✓' },
 ];
 
 export default function DashboardLayout({ children }) {
@@ -49,7 +49,11 @@ export default function DashboardLayout({ children }) {
   }
 
   if (!ready) {
-    return <div className="center-screen"><span className="glow">{t('loading')}</span></div>;
+    return (
+      <div className="center-screen">
+        <span className="glow">{t('loading')}</span>
+      </div>
+    );
   }
 
   return (
