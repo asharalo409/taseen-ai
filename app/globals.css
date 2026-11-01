@@ -1,0 +1,267 @@
+
+@import "tailwindcss";
+
+:root {
+  --background: #070910;
+  --foreground: #f4f5ff;
+  --panel: #101522;
+  --muted: #929bb2;
+  --neon: #00e5ff;
+  --purple: #9b5cff;
+  --border: rgba(255,255,255,.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(0,229,255,.10), transparent 35%),
+    radial-gradient(ellipse at 90% 15%, rgba(155,92,255,.12), transparent 35%),
+    var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  padding: 25px 18px;
+  background: rgba(9,13,24,.92);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--neon);
+  text-shadow: 0 0 18px rgba(0,229,255,.45);
+}
+
+.logo span {
+  color: white;
+}
+
+.side-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 12px 10px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav button {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #b8c0d5;
+  padding: 13px;
+  text-align: left;
+}
+
+.nav button:hover,
+.nav button.active {
+  color: var(--neon);
+  border-color: rgba(0,229,255,.2);
+  background: rgba(0,229,255,.08);
+}
+
+.profile {
+  margin-top: auto;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--panel);
+}
+
+.profile small {
+  color: var(--muted);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.topbar h1 {
+  font-size: 25px;
+  margin: 0;
+}
+
+.status {
+  color: #53e6a3;
+  background: rgba(83,230,163,.1);
+  border: 1px solid rgba(83,230,163,.2);
+  padding: 9px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+}
+
+.hero {
+  padding: 30px;
+  border: 1px solid rgba(0,229,255,.2);
+  border-radius: 20px;
+  background: linear-gradient(120deg, rgba(0,229,255,.10), rgba(155,92,255,.10));
+  margin-bottom: 22px;
+}
+
+.hero h2 {
+  font-size: clamp(25px, 4vw, 38px);
+  margin: 0 0 10px;
+}
+
+.hero p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.neon {
+  color: var(--neon);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.panel {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: rgba(16,21,34,.85);
+}
+
+.panel h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.metric {
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+}
+
+.action {
+  display: inline-block;
+  padding: 12px 17px;
+  border: 1px solid rgba(0,229,255,.35);
+  border-radius: 10px;
+  background: rgba(0,229,255,.10);
+  color: var(--neon);
+  margin: 5px 5px 5px 0;
+}
+
+.action:hover {
+  background: rgba(0,229,255,.2);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0;
+  color: white;
+  background: #080d18;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.footer {
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+  margin-top: 30px;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 190px;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .app {
+    display: block;
+  }
+  .sidebar {
+    width: 100%;
+    padding: 15px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .nav button {
+    text-align: center;
+    padding: 10px 5px;
+    font-size: 12px;
+  }
+  .profile {
+    display: none;
+  }
+  .main {
+    padding: 17px;
+  }
+  .topbar h1 {
+    font-size: 20px;
+  }
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 22px;
+  }
+}
