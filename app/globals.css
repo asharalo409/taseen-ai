@@ -1,4 +1,4 @@
-/* ===== Taseen AI — Theme Upgrade (শুধু চেহারা) ===== */
+/* ===== Taseen AI — globals.css (পূর্ণ ফাইল) ===== */
 
 :root {
   --bg: #04060e;
@@ -13,23 +13,51 @@
   --glow: 0 0 18px rgba(0, 240, 255, 0.35);
 }
 
-/* পটভূমি */
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+/* পটভূমি ও বাংলা-ইংরেজি ফন্ট */
+body {
+  font-family: "Noto Sans Bengali", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
   background:
     radial-gradient(1000px 500px at 85% -10%, rgba(139, 92, 246, 0.18), transparent 60%),
-    radial-gradient(800px 500px at -10% 20%, rgba(0, 240, 255, 0.10), transparent 60%),
+    radial-gradient(800px 500px at -10% 20%, rgba(0, 240, 255, 0.1), transparent 60%),
     var(--bg);
-  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* লিংক: আন্ডারলাইন নেই */
+a {
+  color: var(--cyan);
+  text-decoration: none;
 }
 
 /* সাইডবার */
 aside {
+  padding: 16px;
   background: linear-gradient(180deg, rgba(10, 14, 30, 0.95), rgba(8, 10, 24, 0.92));
   border-right: 1px solid var(--panel-border);
   box-shadow: 8px 0 40px rgba(0, 240, 255, 0.06);
 }
 
+/* মেনুর প্রতিটি লিংক আলাদা লাইনে */
 aside a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin: 2px 0;
   border-radius: 10px;
   color: var(--muted);
   transition: all 0.18s ease;
@@ -47,29 +75,47 @@ aside a[aria-current="page"] {
   box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.35), var(--glow);
 }
 
+/* মূল অংশ */
+main {
+  padding: 20px 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
 /* শিরোনাম: নিয়ন গ্রেডিয়েন্ট */
-h1, h2 {
+h1,
+h2 {
   background: linear-gradient(90deg, var(--cyan), var(--violet) 60%, var(--magenta));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  line-height: 1.3;
 }
 
-/* কার্ড / প্যানেল */
+h3 {
+  color: var(--cyan);
+}
+
+/* কার্ড / বিভাগ */
 section {
   background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 /* বাটন */
 button {
+  padding: 10px 16px;
   border-radius: 10px;
   border: 1px solid rgba(0, 240, 255, 0.35);
   background: linear-gradient(135deg, rgba(0, 240, 255, 0.14), rgba(139, 92, 246, 0.14));
   color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -90,7 +136,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* পাঠান বা জমা দেওয়ার বাটন */
+/* পাঠানো / যোগ করার মূল বাটন */
 button[type="submit"] {
   background: linear-gradient(135deg, var(--cyan), var(--violet));
   color: #04121a;
@@ -105,23 +151,31 @@ button[type="submit"] {
 }
 
 /* ইনপুট */
-input, textarea, select {
+input,
+textarea,
+select {
+  max-width: 100%;
+  padding: 10px 12px;
   background: rgba(8, 12, 28, 0.85);
   border: 1px solid rgba(0, 240, 255, 0.2);
   border-radius: 10px;
   color: var(--text);
+  font-family: inherit;
+  font-size: 16px;
   outline: none;
   transition: all 0.18s ease;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   border-color: var(--cyan);
   box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.15);
 }
 
-/* লিংক ও নির্বাচন */
-a {
-  color: var(--cyan);
+::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
 }
 
 ::selection {
